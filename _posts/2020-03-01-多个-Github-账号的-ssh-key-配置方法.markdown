@@ -3,8 +3,8 @@ layout: post
 title: 多个 Github 账号的 ssh-key 配置方法
 date: 2020-03-01 01:09:17 +0800
 author: dox4
-categories: notes
-tags: Github ssh-key
+categories: notes memo
+tags: Github, ssh-key
 ---
 
 其实加个配置文件就行了。

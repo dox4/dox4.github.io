@@ -3,7 +3,8 @@ layout: post
 title:  在路上…吗？
 date:   2020-02-29 17:56:48 +0800
 author: dox4
-categories: 随笔
+categories: writings essay
+tags: 随笔
 ---
 
 进入主题前，照例要说一些废话。

@@ -11,7 +11,8 @@ layout: post
 title:  #title
 date:   #time
 author: dox4
-categories: TODO
+categories: notes
+tags: TODO
 ---
 '''
 

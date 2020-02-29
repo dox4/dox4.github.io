@@ -3,7 +3,8 @@ layout: post
 title:  关于使用 Github Pages 和 Jekyll 的一些注意事项
 date:   2020-02-29 22:45:10 +0800
 author: dox4
-categories: Github Pages jekyll
+categories: notes memo
+tags: Github Pages, jekyll, Ruby
 ---
 
 权作为一些查漏补缺的记录。
