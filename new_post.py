@@ -10,6 +10,7 @@ config = '''---
 layout: post
 title:  #title
 date:   #time
+author: dox4
 categories: TODO
 ---
 '''
