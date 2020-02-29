@@ -40,6 +40,8 @@ permalink: /about/
 
 使用 [jekyll][jekyll-organization] 和 [Github Pages](https://pages.github.com/) 的好处大概是比较方便换主题，并且原始文档也不会丢失（某种怨念）。
 
+---
 
+本博客所有文章都以 [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/deed.en) 共享。
 
 [jekyll-organization]: https://github.com/jekyll
