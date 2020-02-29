@@ -21,9 +21,9 @@
 title: I am Here. Studying VM.
 email: dox4@foxmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  三十而立，一事无成。
+  三十而立，一事无成。\n
   于是便找个地方写点东西，搪塞自己不曾完全虚度。
-  关于编程、虚拟机、Java/JVM 和其他。
+  关于编程、虚拟机、Java/JVM 和其他。<br>
   也关于我。
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://studyvm.com" # the base hostname & protocol for your site, e.g. http://example.com
