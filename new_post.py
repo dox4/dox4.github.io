@@ -26,5 +26,5 @@ if __name__ == '__main__':
     else:
         title = sys.argv[1]
     t = today()
-    with open('_posts/' + t.split(' ')[0] + '-' + title + '.markdown', 'w', encoding='utf-8') as md:
+    with open('_posts/' + t.split(' ')[0] + '-' + title.replace(' ', '-') + '.markdown', 'w', encoding='utf-8') as md:
         md.write(config.replace('#title', title).replace('#time', t + ' +0800'))
