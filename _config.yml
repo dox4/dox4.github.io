@@ -34,10 +34,11 @@ author:
 
 # Build settings
 # theme: jekyll-theme-slate
-# theme tale
-remote_theme: chesterhow/tale
+theme: minima
+# remote_theme: chesterhow/tale
+# remote_theme: "mmistakes/so-simple-theme"
 
-permalink: /:year-:month-:day/:title
+permalink: /:year/:month/:day/:title
 paginate: 5
 
 plugins:
