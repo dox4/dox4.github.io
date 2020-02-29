@@ -47,7 +47,7 @@ Github 的指引中只提到了 `VERSION` 是当前依赖的 jeykll 的版本号
 
 以上这些都不是我想到的（毕竟我是第一次用 jekyll），而是来自 stackoverflow 上的[一个问题](https://stackoverflow.com/questions/59913903/bundle-exec-jekyll-new-yields-could-not-locate-gemfile-or-bundle-director)，提问者和我遇到了相同的问题，并且……自己找到了答案。
 
-他在答案中使用的 jekyll 版本是 `_4.0.0_`，这是最新的 jekyll 版本，不过在 Github Pages 的 [Dependency versions](https://pages.github.com/versions/) 页面上，`jekyll` 标注的版本是 `_3.8.5_`，所以我也就从善如流地改成了这个版本。
+他在答案中使用的 jekyll 版本是 `_4.0.0_`，这是最新的 jekyll 版本，不过在 Github Pages 的 [Dependency versions](https://pages.github.com/versions/) 页面上，jekyll 标注的版本是 `_3.8.5_`，所以我也就从善如流地改成了这个版本。
 
 ---
 
