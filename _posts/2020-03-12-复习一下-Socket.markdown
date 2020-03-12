@@ -1,0 +1,153 @@
+---
+layout: post
+title:  复习一下 Socket
+date:   2020-03-12 20:27:53 +0800
+author: dox4
+categories: notes development
+tags: Java Web, socket, 计算机网络
+---
+
+最近公司要重构，趁机复习了套接字（Socket）编程的东西，随手记录一下。
+
+不过重构也不会涉及到这么底层的东西就是了。
+
+---
+
+## Socket
+
+对于大部分后端程序员来说，Socket 应该就是网络编程的起点了。
+
+计算机网络应用是建立在 TCP/IP 协议族之上的，这两个协议分别属于传输层和网络层。不过也不会有很多人去对传输层和以下的层级直接进行操作，更多的是使用 Socket API。
+
+这组接口的位置在传输层和应用层中间，对于常年游荡在应用层的程序员来说，已经完全够用了。另一方面或许也是因为它足够简单，只有为数不多的几种操作，其他的细节都已经被隐藏了。
+
+在 Linux 下，C 语言暴露给程序员的方法只有以下几个：
+- `socket()` 创建套接字；
+- `bind()` 服务端用于将套接字和端口绑定；
+- `listen()` 服务端进入监听状态，监听特定端口；
+- `accept()` 服务端接收客户端的请求；
+- `connect()` 客户端用于向特定的IP和地址发起请求；
+- `read()` 从端口读数据；
+- `write()` 向端口写数据；
+- `close()` 关闭套接字。
+
+这几个方法和它们对应的操作就是网络编程的**核心**了，我觉得说是**全部**大概也没有什么问题。
+
+当然我其实是个 Java 程序员，这些操作对应到 Java 中大概是以下的代码：
+
+{% highlight java %}
+// 创建 Socket 并绑定到 IP 地址和端口
+ServerSocket server = new ServerSocket(8080, 1, InetAddress.getByName("127.0.0.1"));
+// 接受用户请求
+Socket socket = server.accept();
+// 套接字的输入流，用于从套接字读取数据
+InputStream input = socket.getInputStream();
+// 套接字的输出流，用于向套接字写入数据
+OutputStream output = socket.getOutputStream();
+// 关闭套接字
+socket.close()
+{% endhighlight %}
+
+上面的代码并没有完全对应到 Socket 所有的操作，不过对于服务端编程来说，需要用到的大体就是这些。
+
+## HTTP 报文
+
+上边的代码再添几行就是一个简单的服务器，一个**完整**的服务器的代码可能像下边这样：
+{% highlight java %}
+
+package com.studyvm.sparrow;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+/**
+ * this is a server if it COULD BE that can only accept one request
+ * and print the request as raw string.
+ * only proved that that the HTTP message is based on clear text.
+ * and you get the request, you can do everything.
+ */
+public class HelloSocket {
+    public static void main(String[] args) {
+        try {
+            ServerSocket server = new ServerSocket(8080, 1, InetAddress.getByName("127.0.0.1"));
+            Socket socket = server.accept();
+            InputStream input = socket.getInputStream();
+            OutputStream output = socket.getOutputStream();
+            byte[] bytes = new byte[1024];
+            int length = input.read(bytes);
+            System.out.println("accept length: " + length);
+            char[] chars = new char[length + 1];
+            for (int i = 0; i < length; i++) {
+                chars[i] = (char) bytes[i];
+            }
+            System.out.println("// === HTTP MESSAGE === ##");
+            System.out.println(String.valueOf(chars));
+            System.out.println("## === HTTP MESSAGE === //");
+            output.write(0x65);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+{% endhighlight %}
+
+上面是一个**只能接受一次请求**的服务器，我刚发现我没有关闭 `socket`，不过程序退出的时候也会被关掉吧。。。
+
+程序启动之后用浏览器访问一下 `httP://127.0.0.1:8080`，控制台会把接收到的 HTTP 报文打印出来，类似如下形式：
+
+```
+GET / HTTP/1.1
+Host: 127.0.0.1:8080
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: en-GB,en;q=0.5
+Accept-Encoding: gzip, deflate
+DNT: 1
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+
+
+```
+第一行是请求方法、路径和协议版本；下边的几行是请求头（Request Headers）。
+
+注意最下边有两个空行，第一个空行是 Request Headers 和 Request Body 的分界线，第二个空行是 `GET` 请求的空请求体。
+
+得到了 `GET` 请求的报文，就可以对报文做一些事情了，当然最简单的就是将一些数据写回 `socket` 的输出流，这样就可以给客户端返回信息。
+
+比如：
+```
+output.write("Hello world".getBytes());
+```
+就给客户端返回了大家喜闻乐见的 `Hello world`。
+
+## 下一步是 Servlet
+
+直接操作 `socket` 固然可以，不过 `javax` 提供了 Servlet Api。使用 Servlet 可以更方便的进行网络编程。
+
+但需要注意的是，Servlet 并不是只能进行网络编程。Servlet 本身是一种独立的抽象，不过我觉得它可能是从网络交互模型中抽象出来的。
+
+`javax.servlet.Servlet` 本身只有五个方法：
+{% highlight java %}
+void            init(ServletConfig config) throws ServletException;
+ServletConfig   getServletConfig();
+void            service(ServletRequest req, ServletResponse res) 
+                    throws ServletException, IOException;
+String          getServletInfo();
+void            destroy();
+{% endhighlight %}
+
+从方法的命名上也可以看出，`service` 是其中的核心方法，其他的基本上都是辅助性质的。也就是说，凡是需要处理 `request` 和 `response` 的过程都可以使用这个接口。
+
+网络编程当然再适合不过。
+
+不过要想真正进行网络编程，还是要手工处理 HTTP Request，因为虽然 `javax.servlet` 提供了一个 `http` 包，但里边只给出了一个 `HttpServletRequest` 的接口，并没有真正的实现解析 HTTP Request 的方法。
+
+然而 HTTP Method 有点多。
+
+那就下次再说吧。
+
+想要让 Servlet 跑起来，需要有一个调用方，也就是所谓的容器。所以下次来聊一聊最著名的容器，tomcat 吧。
