@@ -4,7 +4,7 @@ title:  复习一下 Socket
 date:   2020-03-12 20:27:53 +0800
 author: dox4
 categories: notes development
-tags: Java Web, socket, 计算机网络
+tags: socket, web development, Java
 ---
 
 最近公司要重构，趁机复习了套接字（Socket）编程的东西，随手记录一下。
@@ -87,7 +87,6 @@ public class HelloSocket {
             System.out.println("// === HTTP MESSAGE === ##");
             System.out.println(String.valueOf(chars));
             System.out.println("## === HTTP MESSAGE === //");
-            output.write(0x65);
         } catch (IOException e) {
             e.printStackTrace();
         }
