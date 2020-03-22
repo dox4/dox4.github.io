@@ -42,6 +42,9 @@ show_excerpts: true
 # permalink: /:year/:month/:day/:title
 paginate: 5
 
+social_links:
+  github: dox4
+
 markdown: kramdown
 kramdown:
   input: GFM

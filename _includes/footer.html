@@ -23,13 +23,16 @@
         {%- endif %}
       </div>
       <div class="footer-col">
+        <div class="social-links">
+          {%- include social.html -%}
+        </div>
+      </div>
+      <div class="footer-col">
         <p>{{ site.description | escape }}</p>
       </div>
     </div>
 
-    <div class="social-links">
-      {%- include social.html -%}
-    </div>
+
     <div class="powered-by">
       <p>Powered by <a href="https://pages.github.com/">Github Pages</a> | Theme based on <a
           href="https://github.com/jekyll/minima">minima</a> | Code highlighted by <a
