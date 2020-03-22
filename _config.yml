@@ -18,7 +18,7 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: I am Here. Studying VM.
+title: Study VM.
 email: dox4@foxmail.com
 description: >- # this means to ignore newlines until "baseurl:"
   三十而立，一事无成。
@@ -29,20 +29,26 @@ baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://studyvm.com" # the base hostname & protocol for your site, e.g. http://example.com
 # twitter_username: jekyllrb
 github_username: dox4
-author: dox4
-
+author:
+  name: dox4
+  email: dox4@foxmail.com
+show_excerpts: true
 # Build settings
 # theme: jekyll-theme-slate
-theme: minima
+# theme: minima
 # remote_theme: chesterhow/tale
 # remote_theme: "mmistakes/so-simple-theme"
 
 # permalink: /:year/:month/:day/:title
 paginate: 5
 
+markdown: kramdown
+kramdown:
+  input: GFM
+
 plugins:
   - jekyll-paginate
-  - jekyll-remote-theme
+  # - jekyll-remote-theme
   - jekyll-feed
 # Exclude from processing.
 # The following items will not be processed, by default.
