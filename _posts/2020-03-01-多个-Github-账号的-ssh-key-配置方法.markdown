@@ -9,8 +9,6 @@ tags: Github, ssh-key
 
 其实加个配置文件就行了。
 
----
-
 因为新建这个博客，所以我遇到了要在一台电脑上登录两个 Github 账号的问题，申请两个账号很容易，但管理起来就不是那么顺畅了。
 
 ## Generate more SSH-Keys

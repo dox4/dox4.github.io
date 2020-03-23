@@ -9,8 +9,6 @@ tags: Github Pages, jekyll, Ruby
 
 权作为一些查漏补缺的记录。
 
----
-
 搭这个博客用了好几晚上，尽管原本并不需要这么长时间。不过折腾也是人生的一部分，不折腾的人生有什么意思呢。
 
 最后还是用 [jekyll][jekyll-organization] 和 [Github Pages](https://pages.github.com/) 的**官方解决方案**。

@@ -11,8 +11,6 @@ tags: socket, web development, Java
 
 不过重构也不会涉及到这么底层的东西就是了。
 
----
-
 ## Socket
 
 对于大部分后端程序员来说，Socket 应该就是网络编程的起点了。
@@ -35,7 +33,7 @@ tags: socket, web development, Java
 
 当然我其实是个 Java 程序员，这些操作对应到 Java 中大概是以下的代码：
 
-{% highlight java %}
+```Java
 // 创建 Socket 并绑定到 IP 地址和端口
 ServerSocket server = new ServerSocket(8080, 1, InetAddress.getByName("127.0.0.1"));
 // 接受用户请求
@@ -46,14 +44,14 @@ InputStream input = socket.getInputStream();
 OutputStream output = socket.getOutputStream();
 // 关闭套接字
 socket.close()
-{% endhighlight %}
+```
 
 上面的代码并没有完全对应到 Socket 所有的操作，不过对于服务端编程来说，需要用到的大体就是这些。
 
 ## HTTP 报文
 
 上边的代码再添几行就是一个简单的服务器，一个**完整**的服务器的代码可能像下边这样：
-{% highlight java %}
+```Java
 
 package com.studyvm.sparrow;
 
@@ -92,7 +90,7 @@ public class HelloSocket {
         }
     }
 }
-{% endhighlight %}
+```
 
 上面是一个**只能接受一次请求**的服务器，我刚发现我没有关闭 `socket`，不过程序退出的时候也会被关掉吧。。。
 
@@ -130,14 +128,14 @@ output.write("Hello world".getBytes());
 但需要注意的是，Servlet 并不是只能进行网络编程。Servlet 本身是一种独立的抽象，不过我觉得它可能是从网络交互模型中抽象出来的。
 
 `javax.servlet.Servlet` 本身只有五个方法：
-{% highlight java %}
+```Java
 void            init(ServletConfig config) throws ServletException;
 ServletConfig   getServletConfig();
 void            service(ServletRequest req, ServletResponse res) 
                     throws ServletException, IOException;
 String          getServletInfo();
 void            destroy();
-{% endhighlight %}
+```
 
 从方法的命名上也可以看出，`service` 是其中的核心方法，其他的基本上都是辅助性质的。也就是说，凡是需要处理 `request` 和 `response` 的过程都可以使用这个接口。
 

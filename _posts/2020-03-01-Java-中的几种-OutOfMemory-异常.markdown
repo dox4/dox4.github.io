@@ -11,8 +11,6 @@ tags: JVM, 深入理解 Java 虚拟机, 拆书
 
 主要概括了第二章关于 JVM 运行时内存的内容，包含了各数据区的内存溢出的条件。
 
----
-
 ## 编译 JDK
 
 这本书的第一章讲的是 JDK 的编译，随着 JDK 的发展，其编译过程也更人性化，在 Linux 上编译的话，根据 `confiure` 命令给出的各种提示把需要的依赖装上就没有什么问题。
@@ -43,13 +41,13 @@ JVM 堆（Heap）是 JVM 最大的一块内存区域，按照 JVM 规范，所�
 
 例如，有如下方法：
 
-{% highlight java %}
+```Java
 public long before(Date date) {
     // variable `now` is used ONLY in this method
     Date now = new Date();
     return now.getTime() - date.getTime();
 }
-{% endhighlight %}
+```
 
 分析变量 `now` 的生命周期，它在进入方法之后创建，在方法返回之前**可以**被销毁。那么这个变量如果直接在栈上分配，随着方法的栈帧出栈而销毁，就可以减少一点垃圾回收的工作。
 
@@ -89,7 +87,7 @@ public long before(Date date) {
 
 在这里，书中有一段比较有意思的代码：
 
-{% highlight java %}
+```Java
 public class RuntimeConstantPoolOOM {
     public static void main(String[] args) {
         String str1 = new StringBuilder("计算机").append("软件").toString();
@@ -99,7 +97,7 @@ public class RuntimeConstantPoolOOM {
         System.out.println(str2.intern() == str2);
     }
 }
-{% endhighlight %}
+```
 
 这段代码在知乎上引起了[讨论](https://www.zhihu.com/question/51102308)，这个讨论又让本书作者在第三版中“无奈地摊手”。
 
@@ -129,7 +127,7 @@ dox4@centos$ java -version
 java version "1.6.0_41"
 OpenJDK Runtime Environment (IcedTea6 1.13.13) (rhel-1.13.13.1.el7_3-x86_64)
 OpenJDK 64-Bit Server VM (build 23.41-b41, mixed mode)
-{% endhighlight %}
+```
 
 可以看到这个信息是属于 OpenJDK 6 的，再加上上边的谱系图，得出一个 `true` 和一个 `false` 的结果也就不奇怪了。
 

@@ -9,8 +9,6 @@ tags: servlet, web development, Java
 
 理了一下让 Servlet 跑起来的方法。
 
----
-
 ## Tomcat
 
 Tomcat 是一个著名的 Web 容器。至于容器究竟是什么，似乎不太容易在一篇文章里说明白，也不是这篇文章的主题。
