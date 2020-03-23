@@ -122,7 +122,7 @@ public class RuntimeConstantPoolOOM {
 ![Genealogy of JDK 6 and JDK 7](https://openjdk.java.net/projects/jdk6/images/OpenJDK6-genealogy.png)
 
 <center><div class='image-tips'>Genealogy of JDK 6 and JDK 7</div></center>
-{% highlight shell %}
+```shell
 dox4@centos$ java -version
 java version "1.6.0_41"
 OpenJDK Runtime Environment (IcedTea6 1.13.13) (rhel-1.13.13.1.el7_3-x86_64)
