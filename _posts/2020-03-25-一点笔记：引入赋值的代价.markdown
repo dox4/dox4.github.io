@@ -1,0 +1,144 @@
+---
+layout: post
+title:  一点笔记：引入赋值的代价
+date:   2020-03-25 21:33:18 +0800
+author: dox4
+categories: notes
+tags: functional programming, compile
+---
+
+之前看了点关于函数式编程的东西，昨天又看了一点《计算器程序的构造和解释》，惊觉自己从未思考过“赋值”这件理所当然的事情其实是有代价的，所以记一点笔记。
+
+《SICP》是用 `scheme` 作为编程语言讲解的，我学了一点，怎么都不适应它的写法，可能还是因为我学的和常用的都是类 `C` 语言吧。这篇笔记是用 `JavaScript` 写的。
+
+**不用任何赋值的程序设计称为函数式程序设计（*SICP*）**，这个显著的特点使得函数式编程相比命令式编程或其他编程范式，更加“数学”一点，**更加強調程序执行的结果而非执行的过程（*维基百科*）**。
+
+## 代换模型
+
+引入赋值的一个代价就是代换模型的失效。
+
+对于函数式编程来说，表达式的计算可以完全由代换模型实现，这大概也是惰性求值的一个理论基础？
+
+但加入赋值之后，事情就变得没有那么简单了。
+
+例如：
+
+``` JavaScript
+function make_simplified_withdraw(balance) {
+    return function(amount) {
+        balance = balance - amount // line 3
+        return balance
+    }
+}
+```
+
+我们可以得到：
+
+``` JavaScript
+const w = make_simplified_withdraw(25)
+
+w(10) // => 15
+w(10) // => 5
+```
+
+这显然不是一个“函数式”的函数，使用同一个参数去调用两次这个函数，竟然得到了不同的结果。这就说明代换模型失效了。
+
+类似的，一个函数式的函数应该像这样：
+
+``` JavaScript
+function make_decrementer(balance) {
+    return (amount) => balance - amount
+}
+```
+
+它的行为也像我们预期的一样：
+
+``` JavaScript
+const d = make_decrementer(25)
+d(10) // => 15
+d(10) // => 15
+```
+
+这是因为在引入赋值之前，表达式中的每个符号都只是值的别名，而在引入赋值之后，符号本身就变成了一个可以保存值的位置的索引，既然是一个位置，那么在那里的就不一定一直是同一个人。
+
+在上边标记了 `line 3` 的那一行代码中：
+
+```
+balance = balance - amount
+``` 
+
+在赋值符号前后的 `balance` 尽管是同一个符号，但已经不是同一个值了。
+
+## 同一性
+
+理解同一性的另一个例子是上面两个函数的返回结果，将他们分别调用两次：
+
+``` JavaScript
+const w1 = make_simplified_withdraw(25)
+const w2 = make_simplified_withdraw(25)
+
+const d1 = make_decrementer(25)
+const d2 = make_decrementer(25)
+```
+
+`w1` 和 `w2` 是**同一**的吗？显然不是。对两者的调用会产生不同的结果：
+
+``` JavaScript
+w1(10) // => 15
+w1(10) // => 5
+w2(10) // => 15
+```
+
+然而若比较 `d1` 和 `d2` 的同一性，却可以认为他们是相同的。这是因为，使用同样的参数去调用两者，一定会得到相同的结果：
+
+``` JavaScript
+d1(20) // => 5
+d1(20) // => 5
+d2(20) // => 5
+```
+
+## 执行顺序
+
+这就引出了赋值所带来的另外一个代价，赋值顺序的不同可能会引起程序得到不同的执行结果：
+
+``` JavaScript
+function factorial(n) {
+    let counter = 1,
+        product = 1
+    while (counter <= n) {
+        product = product * counter // line 4
+        counter = counter + 1       // line 5
+    }
+    return product
+}
+```
+
+在上边的函数中， `line 4` 和 `line 5` 的顺序是不能改变的。如果交换两者的位置，就会造成结果从 `n` 的阶乘变成了 `n + 1` 的阶乘。
+
+关于执行顺序的另一个更有意思的例子在于函数参数的计算顺序。
+
+*SICP* 的练习 3.8 提出了这样一个问题。
+
+> Define a simple procedure `f` such that evaluating
+> `(+ (f 0) (f 1)) `
+> will return 0 if the arguments to `+` are evaluated from left to right but will return 1 if the arguments are evaluated from right to left. 
+
+`JavaScript` 版的答案：
+
+```JavaScript
+const f = (function(){
+    let k = 1
+    return function(n) {
+        k = k * n
+        return k
+    }
+})()
+
+const add = (x, y) => x + y
+
+add(f(0), f(1)) // => 0
+```
+
+这也说明了，`JavaScript` 的参数计算顺序是从左到右。
+
+如果把这些代码翻译成等义的 `C` 代码，最后调用 `add()` 所得的结果就是 `1` 了。这是因为 `C` 语言的参数一般是从右向左计算的。
