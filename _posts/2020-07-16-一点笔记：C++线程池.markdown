@@ -1,0 +1,148 @@
+---
+layout: post
+title:  一点笔记：C++线程池
+date:   2020-07-16 20:00:50 +0800
+author: dox4
+categories: development
+tags: C++, thread, thread pool
+---
+
+写一点关于 `C++` 线程池的笔记，虽然我是个 `Java` 程序员。
+
+之前有一篇[关于 `socket` 的文章](notes/development/2020/03/12/复习一下-Socket.html)，是用 `Java` 写的，最近在看游双的[《Linux 高性能服务器编程》](https://book.douban.com/subject/24722611/)，书里的代码基本上是 `C/C++`，这两种语言我也会一点，所以“从零开始写一个服务器”，似乎也不是不行的样子。
+
+除了书上的代码，在 `Github` 上也看到了一些和这本书相关的项目，有的[在知乎上](https://www.zhihu.com/question/39169728)获得了不少赞同，我也跟着看了看。
+
+考虑到高性能编程，肯定涉及到了线程池的使用。我在工作中使用的是 `Java`，这门语言自带一个复杂高效的线程管理系统，现在的我基本上只能了解一下原理，而使用 `C++` 写一个简单的线程池这件事，似乎又不是很难的样子。
+
+上面知乎的链接中会跳转到[这个项目](https://github.com/markparticle/WebServer)，这个项目本身带有一个简单的线程池。这个线程池的代码则化用自：[用 C++ 写线程池是怎样一种体验？ - Graphene的回答 - 知乎](https://www.zhihu.com/question/27908489/answer/355105668)。
+
+我把他的代码贴在这，问题应该也不大。看代码的时候，我往里边加了点注释。不过为了美观，字数较多的注释就写了个标号，写在代码下方了。
+
+```C++
+#include <mutex>
+#include <condition_variable>
+#include <functional>
+#include <queue>
+#include <thread>
+
+class fixed_thread_pool {
+ public:
+  explicit fixed_thread_pool(size_t thread_count)
+      : data_(std::make_shared<data>()) {
+    for (size_t i = 0; i < thread_count; ++i) {
+      std::thread([data = data_] {
+        std::unique_lock<std::mutex> lk(data->mtx_);
+        for (;;) {
+          if (!data->tasks_.empty()) {
+            auto current = std::move(data->tasks_.front());
+            data->tasks_.pop();
+            // 1
+            lk.unlock();
+            current();
+            lk.lock();
+          } else if (data->is_shutdown_) {
+            break;
+          } else {
+            // 没有任务的线程，在后台 wait
+            data->cond_.wait(lk);
+          }
+        }
+      // 2
+      }).detach();
+    }
+  }
+
+  fixed_thread_pool() = default;
+  fixed_thread_pool(fixed_thread_pool&&) = default;
+
+  ~fixed_thread_pool() {
+    if ((bool) data_) {
+      {
+        std::lock_guard<std::mutex> lk(data_->mtx_);
+        data_->is_shutdown_ = true;
+      }
+      data_->cond_.notify_all();
+    }
+  }
+
+  template <class F>
+  void execute(F&& task) {
+    {
+      std::lock_guard<std::mutex> lk(data_->mtx_);
+      data_->tasks_.emplace(std::forward<F>(task));
+    }
+    // 随机选择一个线程执行任务
+    data_->cond_.notify_one();
+  }
+
+ private:
+  struct data {
+    std::mutex mtx_;
+    std::condition_variable cond_;
+    bool is_shutdown_ = false;
+    std::queue<std::function<void()>> tasks_;
+  };
+  std::shared_ptr<data> data_;
+};
+```
+
+`// 1` 处对线程持有的锁进行了释放，这之后所有的线程都可能持有该锁。这一步操作是假定各线程执行任务 `current()` 方法时，互相之间没有竞争操作，或者说，各个任务都是相互独立的。
+
+`// 2` 处使用的 `detach()` 函数对于 `C++` 程序员应该是基础知识，不过我第一次见到，所以也记一点笔记。该方法使当前线程与主线程分离，主线程不会等待该线程执行完毕才结束。
+
+和 `detach()` 对应的方法是 `join()`，不过此处不能使用 `join()`，因为当线程池初始化时，任务队列必然是空的，至少有一个线程会进入 `wait()` 方法所在的分支，如果使用 `join()` 方法，主线程会因为当前线程 `wait()` 而阻塞。
+
+但是使用 `detach()` 方法也有一个潜在的问题，即主线程退出时，不会关心其余线程是否执行完毕，有可能会导致某些任务没有执行。
+
+这可以用下面的测试代码证明：
+```C++
+#include "fixed_thread_pool.h"
+#include <iostream>
+#include <unistd.h>
+
+using namespace std;
+static int cnt = 1;
+void worker() {
+    // 模拟任务耗时
+    this_thread::sleep_for(chrono::milliseconds(1));
+    cout << cnt++ << " -> " << "thread: 0x" << hex << this_thread::get_id() << endl;
+}
+
+int main(int argc, char const *argv[])
+{
+    fixed_thread_pool pool(2);
+    for (size_t i = 0; i < 10; i++)
+    {
+        pool.execute(worker);
+    }
+    // 主线程退出前留出部分时间执行其它线程的任务
+    // 随着此处 sleep 时间的长短，能够执行完成的数量会有所变化
+    this_thread::sleep_for(chrono::milliseconds(5));
+    return 0;
+}
+
+```
+
+输出为：
+```
+12 ->  -> thread: 0xthread: 0x7fe257ea17007fe2576a0700
+
+34 ->  -> thread: 0xthread: 0x7fe2576a0700
+7fe257ea1700
+5 -> thread: 0x7fe2576a0700
+6 -> thread: 0x7fe257ea1700
+7 -> thread: 0x7fe2576a0700
+8 -> thread: 0x7fe257ea1700
+```
+可见原本有 10 个任务，但是只执行了 8 个。
+
+这个问题在服务器端编程不会出现，服务器的主线程应该永远比客户端处理线程的生存时间长。
+
+上面输出的前三行的乱序则证明了在执行 `worker()` 方法（即任务）时，各个线程出现了竞争，这时候如果把 `// 1` 处的 `unlock()` 和 `lock()` 方法注释掉，就可以保证各个线程的输出不受影响了。
+
+这个情况在服务器端的出现的情景应该是打印日志的情况，如果各个线程的日志乱序打印会给排查问题造成很大的困扰。不过输出日志应该和各个请求处理线程是解耦的，由单独的一条线程处理，在软件设计上不应该存在这个问题。
+
+而对于请求处理线程来说，各个连接的逻辑处理本身就是相互独立的，所以这么做应该没有问题。
+
+以上。

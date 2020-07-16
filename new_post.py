@@ -1,4 +1,4 @@
-#! python
+#!python3
 # charset=utf-8
 
 # create a new post with a proper and correct formated title.

@@ -10,7 +10,7 @@ permalink: /about/
 
 学过 C/C++/Python，写过一些玩具代码。
 
-工作使用一台装了 Debian 10 的小台式机，所以 Linux 也懂一些。
+工作使用一台装了 Xubuntu 20.04 的小台式机，所以 Linux 也懂一些。
 
 准备研究一下 JVM ，所以建立了这个博客。
 
