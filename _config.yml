@@ -21,7 +21,7 @@
 title: Study VM.
 email: dox4@foxmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  你总得干点什么对吧。
+  You must make some difference, right?
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://studyvm.com" # the base hostname & protocol for your site, e.g. http://example.com
 # twitter_username: jekyllrb

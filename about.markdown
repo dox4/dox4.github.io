@@ -28,20 +28,20 @@ permalink: /about/
 不过公众号上也不会写什么技术性的东西，会写点小说什么的吧。
 
 --- 
-
+<br><br>
 上边的博客用的都是不同的名字，有**伪童**，**大熊**，**nagisa**和现在用的这个。其实 dox4 是**大熊**的拼音中随便挑了几个字母拼出来的，加上 4 是避免重名。
 
 好像我也在其他的地方写过博客，不过既然已经不记得了，大约就不重要吧。
 
 
 ---
-
+<br><br>
 这个博客是用 [jekyll][jekyll-organization] 和 [Github Pages](https://pages.github.com/) 直接搭在 [Github](https://github.com) 上的。
 
 使用 [jekyll][jekyll-organization] 和 [Github Pages](https://pages.github.com/) 的好处大概是比较方便换主题，并且原始文档也不会丢失（某种怨念）。
 
 ---
-
+<br><br>
 本博客所有文章都以 [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/deed.en) 共享。
 
 [jekyll-organization]: https://github.com/jekyll

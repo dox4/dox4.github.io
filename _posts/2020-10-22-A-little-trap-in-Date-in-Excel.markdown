@@ -10,7 +10,7 @@ tags: POI, Java, Date, Excel
 At first, let's see the minimal code to jump into this trap.
 
 ## repetition
-
+---
 This trap is about Excel, so we should have an Excel file, and then, let's write a number `44125.0729162616` in the first cell.
 
 > note: `44125.0729162616` is NOT the only particular number.
